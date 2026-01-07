@@ -55,7 +55,7 @@ app.post("/adduser", async (req, res) => {
 });
 
 // Edit user
-app.update("/edituser/:id", async (req, res) => {
+app.post("/edituser/:id", async (req, res) => {
   const user_id = parseInt(req.params.id);
   const { fullName, email, phoneNumber } = req.body;
   try {
@@ -77,7 +77,7 @@ app.update("/edituser/:id", async (req, res) => {
 });
 
 // Delete user
-app.delete("/deleteuser/:id", async (req, res) => {
+app.post("/deleteuser/:id", async (req, res) => {
   const user_id = parseInt(req.params.id);
   try {
     let connection = await mysql.createConnection(dbConfig);
