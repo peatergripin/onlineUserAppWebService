@@ -22,75 +22,153 @@ app.use(express.json());
 // Start Server
 app.listen(PORT, () => console.log("Server running on port", PORT));
 
-// Example Route: Get all users
-app.get("/allusers", async (req, res) => {
+// // Example Route: Get all users
+// app.get("/allusers", async (req, res) => {
+//   try {
+//     let connection = await mysql.createConnection(dbConfig);
+//     const [rows] = await connection.execute("SELECT * FROM defaultdb.users");
+//     res.json(rows);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error for allusers" });
+//   }
+// });
+
+// ------- GET ROUTE -------
+app.get("/users", async (req, res) => {
   try {
-    let connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute("SELECT * FROM defaultdb.users");
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute("SELECT * FROM users");
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error for allusers" });
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 });
 
-// Example Route: Create a new user
-app.post("/adduser", async (req, res) => {
-  const { fullName, email, phoneNumber } = req.body;
+app.get("/users/:id", async (req, res) => {
+  const userId = parseInt(req.params.id);
   try {
-    let connection = await mysql.createConnection(dbConfig);
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE userid = ?",
+      [userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch user with id: " + userId });
+  }
+});
+
+// // Example Route: Create a new user
+// app.post("/adduser", async (req, res) => {
+//   const { fullName, email, phoneNumber } = req.body;
+//   try {
+//     let connection = await mysql.createConnection(dbConfig);
+//     await connection.execute(
+//       "INSERT INTO defaultdb.users (fullName, email, phoneNumber) VALUES (?,?,?)",
+//       [fullName, email, phoneNumber]
+//     );
+//     res
+//       .status(201)
+//       .json({ message: "User " + fullName + " added successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res
+//       .status(500)
+//       .json({ message: "Server error - could not add user " + fullName });
+//   }
+// });
+
+// ------- CREATE ROUTE -------
+app.post("/users", async (req, res) => {
+  const { fullName, email, phoneNumber } = req.body;
+
+  try {
+    const connection = await mysql.createConnection(dbConfig);
     await connection.execute(
-      "INSERT INTO defaultdb.users (fullName, email, phoneNumber) VALUES (?,?,?)",
+      "INSERT INTO users (fullName, email, phoneNumber) VALUES (?, ?, ?)",
       [fullName, email, phoneNumber]
     );
-    res
-      .status(201)
-      .json({ message: "User " + fullName + " added successfully" });
+
+    res.status(201).json({
+      message: "User created successfully",
+    });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "Server error - could not add user " + fullName });
+    res.status(500).json({ message: "Failed to create user" });
   }
 });
 
-// Edit user
-app.post("/edituser/:id", async (req, res) => {
-  const user_id = parseInt(req.params.id);
+// // Edit user
+// app.post("/edituser/:id", async (req, res) => {
+//   const user_id = parseInt(req.params.id);
+//   const { fullName, email, phoneNumber } = req.body;
+//   try {
+//     let connection = await mysql.createConnection(dbConfig);
+//     //'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?'
+//     await connection.execute(
+//       "UPDATE users SET fullName = ?, email = ?, phoneNumber = ? WHERE userid = ?",
+//       [fullName, email, phoneNumber, user_id]
+//     );
+//     res
+//       .status(201)
+//       .json({ message: "User " + fullName + " added successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res
+//       .status(500)
+//       .json({ message: "Server error - could not add user " + fullName });
+//   }
+// });
+
+// ------- UPDATE ROUTE -------
+app.put("/users/:id", async (req, res) => {
+  const userId = parseInt(req.params.id);
   const { fullName, email, phoneNumber } = req.body;
+
   try {
-    let connection = await mysql.createConnection(dbConfig);
-    //'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?'
+    const connection = await mysql.createConnection(dbConfig);
     await connection.execute(
-      "UPDATE users SET fullName = ?, email = ?, phoneNumber = ? WHERE userid = ?",
-      [fullName, email, phoneNumber, user_id]
+      "UPDATE users SET fullName=?, email=?, phoneNumber=? WHERE userid=?",
+      [fullName, email, phoneNumber, userId]
     );
-    res
-      .status(201)
-      .json({ message: "User " + fullName + " added successfully" });
+
+    res.json({ message: "User updated successfully" });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "Server error - could not add user " + fullName });
+    res.status(500).json({ message: "Failed to update user" });
   }
 });
 
-// Delete user
-app.post("/deleteuser/:id", async (req, res) => {
-  const user_id = parseInt(req.params.id);
+// // Delete user
+// app.post("/deleteuser/:id", async (req, res) => {
+//   const user_id = parseInt(req.params.id);
+//   try {
+//     let connection = await mysql.createConnection(dbConfig);
+//     await connection.execute("DELETE FROM defaultdb.users WHERE userid=?", [
+//       user_id,
+//     ]);
+//     res
+//       .status(201)
+//       .json({ message: "User " + fullName + " successfully deleted" });
+//   } catch (err) {
+//     console.error(err);
+//     res
+//       .status(500)
+//       .json({ message: "Server error - could not remove user " + fullName });
+//   }
+// });
+
+// ------- DELETE ROUTE -------
+app.delete("/users/:id", async (req, res) => {
+  const userId = parseInt(req.params.id);
+
   try {
-    let connection = await mysql.createConnection(dbConfig);
-    await connection.execute("DELETE FROM defaultdb.users WHERE userid=?", [
-      user_id,
-    ]);
-    res
-      .status(201)
-      .json({ message: "User " + fullName + " successfully deleted" });
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute("DELETE FROM users WHERE userid=?", [userId]);
+
+    res.json({ message: "User deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "Server error - could not remove user " + fullName });
+    res.status(500).json({ message: "Failed to delete user" });
   }
 });
