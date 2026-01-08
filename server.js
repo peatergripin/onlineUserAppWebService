@@ -50,7 +50,7 @@ app.get("/user/:id", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute(
-      "SELECT * FROM defaultdb.users WHERE userid = ?",
+      "SELECT * FROM defaultdb.users WHERE id = ?",
       [userId]
     );
     res.json(rows);
