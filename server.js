@@ -45,7 +45,7 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.get("/users/:id", async (req, res) => {
+app.get("/user/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     const connection = await mysql.createConnection(dbConfig);

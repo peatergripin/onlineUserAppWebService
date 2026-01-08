@@ -16,7 +16,7 @@ https://onlineuserappwebservice.onrender.com/users
 | Method | Route             | Description               |
 | -----: | ----------------- | ------------------------- |
 |    GET | `/allusers`       | Fetch all items           |
-|    GET | `/users/:id`      | Fetch a single item by ID |
+|    GET | `/user/:id`       | Fetch a single item by ID |
 |   POST | `/adduser`        | Create a new item         |
 |    PUT | `/updateuser/:id` | Update an existing item   |
 | DELETE | `/deleteuser/:id` | Delete an item            |
