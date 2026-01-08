@@ -38,7 +38,7 @@ app.listen(PORT, () => console.log("Server running on port", PORT));
 app.get("/users", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute("SELECT * FROM users");
+    const [rows] = await connection.execute("SELECT * FROM defaultdb.users");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch users" });
@@ -50,7 +50,7 @@ app.get("/users/:id", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute(
-      "SELECT * FROM users WHERE userid = ?",
+      "SELECT * FROM defaultdb.users WHERE userid = ?",
       [userId]
     );
     res.json(rows);
@@ -88,7 +88,7 @@ app.post("/users", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     await connection.execute(
-      "INSERT INTO users (fullName, email, phoneNumber) VALUES (?, ?, ?)",
+      "INSERT INTO defaultdb.users (fullName, email, phoneNumber) VALUES (?, ?, ?)",
       [fullName, email, phoneNumber]
     );
 
@@ -130,7 +130,7 @@ app.put("/users/:id", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     await connection.execute(
-      "UPDATE users SET fullName=?, email=?, phoneNumber=? WHERE userid=?",
+      "UPDATE defaultdb.users SET fullName=?, email=?, phoneNumber=? WHERE userid=?",
       [fullName, email, phoneNumber, userId]
     );
 
@@ -165,7 +165,9 @@ app.delete("/users/:id", async (req, res) => {
 
   try {
     const connection = await mysql.createConnection(dbConfig);
-    await connection.execute("DELETE FROM users WHERE userid=?", [userId]);
+    await connection.execute("DELETE FROM defaultdb.users WHERE userid=?", [
+      userId,
+    ]);
 
     res.json({ message: "User deleted successfully" });
   } catch (err) {
